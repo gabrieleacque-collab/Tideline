@@ -1,0 +1,111 @@
+name: Sync Tideline static site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download latest deployed site
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://tideline.cvi.cc.cd"
+
+          mkdir -p assets
+
+          files=(
+            "index.html"
+            "test.html"
+            "result.html"
+            "routes.html"
+            "model.html"
+            "README.md"
+            "assets/calculate.js"
+            "assets/routes-data.js"
+            "assets/state.js"
+            "assets/styles.css"
+            "assets/ui.js"
+            "assets/persona-build.png"
+            "assets/persona-plant.png"
+            "assets/persona-surf.png"
+            "assets/persona-wind.png"
+            "assets/retreat-slider.png"
+            "assets/tideline-hero.png"
+            "assets/tideline-logo-mask.png"
+          )
+
+          for file in "${files[@]}"; do
+            echo "Downloading $file"
+            curl -fsSL "$BASE/$file" -o "$file"
+          done
+
+          cat > serve-test-site.js <<'JS'
+          const http = require("http");
+          const fs = require("fs");
+          const path = require("path");
+
+          const root = __dirname;
+          const port = Number(process.argv[2] || 5201);
+          const host = process.argv[3] || "127.0.0.1";
+
+          const types = {
+            ".html": "text/html; charset=utf-8",
+            ".css": "text/css; charset=utf-8",
+            ".js": "application/javascript; charset=utf-8",
+            ".json": "application/json; charset=utf-8",
+            ".png": "image/png",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".webp": "image/webp"
+          };
+
+          http.createServer((req, res) => {
+            let urlPath = decodeURIComponent(req.url.split("?")[0]);
+            if (urlPath === "/") urlPath = "/index.html";
+            const file = path.resolve(root, `.${urlPath}`);
+            if (!file.startsWith(root)) {
+              res.writeHead(403);
+              res.end("forbidden");
+              return;
+            }
+            fs.readFile(file, (err, data) => {
+              if (err) {
+                res.writeHead(404);
+                res.end("not found");
+                return;
+              }
+              res.writeHead(200, {
+                "Content-Type": types[path.extname(file)] || "application/octet-stream",
+                "Cache-Control": "no-store"
+              });
+              res.end(data);
+            });
+          }).listen(port, host, () => {
+            const shownHost = host === "0.0.0.0" ? "localhost" : host;
+            console.log(`http://${shownHost}:${port}/`);
+          });
+          JS
+
+      - name: Commit downloaded site
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md index.html test.html result.html routes.html model.html serve-test-site.js assets
+          if git diff --cached --quiet; then
+            echo "No site changes to commit."
+          else
+            git commit -m "Upload Tideline static site"
+            git push
+          fi
