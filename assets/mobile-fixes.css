@@ -1,0 +1,201 @@
+@media (max-width: 760px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .shell {
+    width: calc(100% - 20px);
+    padding: 10px 0 30px;
+  }
+
+  .topbar,
+  .layout,
+  .persona-card,
+  .famous-detail,
+  .expected-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topbar,
+  .layout {
+    gap: 12px;
+  }
+
+  .layout {
+    min-height: auto;
+    padding: 14px 0 28px;
+  }
+
+  .layout > .panel,
+  .panel,
+  .panel-body,
+  .quad-wrap,
+  .target-card,
+  .trajectory-card,
+  .famous-section,
+  .model-page {
+    min-width: 0;
+  }
+
+  .panel-head,
+  .expected-head {
+    align-items: flex-start;
+  }
+
+  .panel-head {
+    flex-wrap: wrap;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .panel-body {
+    padding: 12px;
+  }
+
+  .brand {
+    gap: 12px;
+  }
+
+  .brand h1 {
+    font-size: 23px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .page-nav {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 7px;
+  }
+
+  .page-nav a {
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  .quad {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+  }
+
+  .axis {
+    font-size: 10px;
+  }
+
+  .axis.top {
+    top: 8px;
+  }
+
+  .axis.bottom {
+    bottom: 8px;
+  }
+
+  .axis.left {
+    left: 4px;
+  }
+
+  .axis.right {
+    right: 4px;
+  }
+
+  .node {
+    width: 34%;
+    min-height: 64px;
+    padding: 7px;
+    gap: 3px;
+  }
+
+  .node strong {
+    font-size: 12px;
+  }
+
+  .node span {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .position-dot,
+  .target-dot {
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+  }
+
+  .position-label {
+    max-width: 112px;
+    padding: 5px 7px;
+    font-size: 10px;
+    transform: translate(-50%, 16px);
+  }
+
+  .score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .generate-card-button {
+    min-height: 50px;
+    font-size: 14px;
+  }
+
+  .identity-deck {
+    min-height: auto;
+    padding: 16px 0;
+  }
+
+  .persona-copy {
+    padding: 20px;
+  }
+
+  .persona-visual {
+    min-height: 300px;
+    max-height: 420px;
+  }
+
+  .expected-head {
+    display: grid;
+  }
+
+  .open-famous {
+    width: fit-content;
+  }
+
+  .famous-groups {
+    grid-auto-columns: minmax(240px, calc(100vw - 42px));
+    grid-template-rows: repeat(2, minmax(160px, auto));
+    gap: 10px;
+    margin: 0 -6px;
+    padding: 2px 6px 16px;
+  }
+
+  .famous-card {
+    grid-template-columns: 76px minmax(0, 1fr);
+    min-height: 160px;
+    gap: 10px;
+  }
+
+  .famous-card img {
+    width: 76px;
+    height: 118px;
+  }
+
+  .famous-card h4 {
+    font-size: 14px;
+  }
+
+  .route-sparkline {
+    height: 30px;
+  }
+
+  .famous-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 13px;
+  }
+}
