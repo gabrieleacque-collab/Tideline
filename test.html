@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>潮汐线 TIDELINE · 测试</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="test">
+  <canvas id="network" aria-hidden="true"></canvas>
+  <div class="result-flash" id="resultFlash" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="topbar" data-section="identity">
+  <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1>潮汐线 TIDELINE</h1><p class="subtitle">把日常收入、债务和机会放进一张坐标里。A self-check for income, debt and room to move.</p></div></div>
+  <nav class="page-nav" aria-label="主导航">
+  <a class="active" href="test.html">测试</a>
+  <a class="" href="result.html">结果</a>
+  <a class="" href="routes.html">名人路径</a>
+  <a class="" href="model.html">方法论</a>
+</nav>
+</header>
+    <section class="layout" data-section="coordinates">
+      <section class="panel"><div class="panel-head"><h2 class="panel-title">日常参数输入</h2><span class="panel-kicker">Daily Signals</span></div><div class="panel-body"><div class="test-form" id="form"></div><div class="situation-card"><label for="situationInput">个人情况补充</label><textarea id="situationInput" placeholder="如果你想要更准确的话，可以写上你的个人情况"></textarea><p id="situationHint">后台接入 AI 后会读取这里；现在先用关键词轻轻修正定位点。</p><button id="situationApply" type="button">更新定位</button></div></div></section>
+      <section class="panel"><div class="panel-head"><h2 class="panel-title">四元坐标与收入人格</h2><span class="panel-kicker">Quadrilateral Map</span></div><div class="panel-body quad-wrap">
+        <div class="quad" id="quad"><span class="axis top">占有 / 被动收益</span><span class="axis bottom">劳动 / 主动收益</span><span class="axis left">陆地经济 / 确定性</span><span class="axis right">海洋经济 / 不确定性</span><div class="node landlord"><strong>筑基型</strong><span>让资产替你工作</span></div><div class="node pirate"><strong>借风型</strong><span>靠速度和信息差获利</span></div><div class="node farmer"><strong>播种型</strong><span>用时间换确定性</span></div><div class="node fisher"><strong>逐浪型</strong><span>靠判断和时机吃饭</span></div><div class="position-dot" id="dot"></div><div class="position-label" id="dotLabel">稳定底线 + 开放上限</div><svg class="trajectory-overlay" id="trajectoryOverlay" viewBox="0 0 100 100" aria-hidden="true"><polyline id="trajectoryPolyline" points=""></polyline><g id="trajectoryPoints"></g></svg><div class="target-path" id="targetPath" aria-hidden="true"></div><button class="target-dot" id="targetDot" type="button" aria-label="拖动光点，选择想去的位置"></button></div>
+        <div class="target-card"><span class="section-note">Target Drag / Future Position</span><h3>拖动光点，选择想去的位置</h3><p>当前点是你现在的结构；你拖动的是“想去的结构”。平台会按这条轨迹分析：你要增加什么、减少什么，才更接近拖动后的结果。</p></div>
+        <div class="target-card trajectory-card"><span class="section-note">Route Memory / 最近 10 次</span><h3>测算轨迹</h3><p>每做一次记录，就把当前坐标点留在图上。</p><div class="trajectory-actions"><button id="recordCurrentPosition" type="button">记录本次坐标</button><button id="clearTrajectory" type="button">清空轨迹</button></div><ol class="record-list" id="recordList"></ol></div>
+        <div class="score-grid"><div class="score" style="--tone: var(--gold)"><span>筑基分</span><strong id="scoreLandlord">24</strong></div><div class="score" style="--tone: var(--red)"><span>借风分</span><strong id="scorePirate">18</strong></div><div class="score" style="--tone: var(--green)"><span>播种分</span><strong id="scoreFarmer">70</strong></div><div class="score" style="--tone: var(--blue)"><span>逐浪分</span><strong id="scoreFisher">46</strong></div></div>
+        <div class="flow-actions"><a class="generate-card-button" id="generateTideCardButton" href="result.html">生成我的潮汐卡</a></div>
+      </div></section>
+    </section>
+  </main>
+  <script type="module" src="assets/ui.js"></script>
+</body>
+</html>

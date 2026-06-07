@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>潮汐线 TIDELINE · 结果</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="result">
+  <canvas id="network" aria-hidden="true"></canvas>
+  <div class="result-flash" id="resultFlash" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="topbar" data-section="identity">
+  <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1>潮汐线 TIDELINE</h1><p class="subtitle">把日常收入、债务和机会放进一张坐标里。A self-check for income, debt and room to move.</p></div></div>
+  <nav class="page-nav" aria-label="主导航">
+  <a class="" href="test.html">测试</a>
+  <a class="active" href="result.html">结果</a>
+  <a class="" href="routes.html">名人路径</a>
+  <a class="" href="model.html">方法论</a>
+</nav>
+</header>
+    <section class="empty-result panel" id="emptyResult"><h2>请先完成测试</h2><p>结果页需要读取你的参数和目标坐标。先完成测试，再生成自己的潮汐卡。</p><div class="hero-actions"><a class="hero-btn primary" href="test.html">返回测试页</a></div></section>
+    <section class="result-content" id="resultContent">
+      <section class="identity-deck" id="tidelineCard" data-section="identity-card"><section class="persona-card panel"><div class="persona-visual"><img id="personaImage" src="assets/persona-plant.png" alt="播种型人格插画"></div><div class="persona-copy"><span class="section-note">My Tide Card / 现状与未来</span><h2>我的潮汐卡</h2><div class="identity-row"><span>现状</span><strong id="cardCurrent">播种型</strong></div><div class="identity-row"><span>想去的方向</span><strong id="cardFuture">中线均衡区</strong></div><p id="cardRelation">你现在靠稳定底盘站住，未来要把一部分时间交给可以重复的机会。</p><div class="card-route"><span>这条路怎么走</span><ol id="cardSteps"></ol></div></div></section>
+      <section class="card-conclusion panel" id="cardConclusion"><div class="panel-head"><h2 class="panel-title">未来进展评估结论</h2><span class="panel-kicker">Forward View</span></div><div class="panel-body result-stack"><div class="verdict"><h3 id="verdictTitle">第三条路正在形成</h3><p id="verdictText">你已经有稳定底线，也开始从项目或机会中捕获上限。</p></div><div class="target-card" id="targetAnalysis"><span class="section-note">目标路径分析 / Route Analysis</span><h3 id="targetAnalysisTitle">你想去的结构：中线均衡区</h3><p id="targetAnalysisText">做到这个结果，你需要在保住稳定现金流的同时，把一个具体项目、客户或作品做成可重复收入。</p><ol id="targetSteps"></ol></div></div></section>
+      <section class="expected-greats panel" id="expectedGreats"><div class="expected-head"><div><span class="section-note">Expected Route / 走成这条路的人</span><h3>查看走成我期望轨迹的伟人</h3><p>平台会按你拖动的未来方向，挑出几张更接近的路径卡。</p></div><a class="open-famous" id="openFamousRoutes" href="routes.html">查看更多</a></div><div class="expected-cards" id="expectedGreatCards"></div></section>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="assets/ui.js"></script>
+</body>
+</html>
