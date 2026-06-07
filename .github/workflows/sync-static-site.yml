@@ -1,8 +1,6 @@
 name: Sync Tideline static site
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
