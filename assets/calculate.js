@@ -1,5 +1,6 @@
 export const inputs = [
       { id: "stableIncome", label: "稳定工资/固定现金流占比", value: 62, hint: "越高越接近播种型，代表时间换钱的底盘。" },
+      { id: "supportIncome", label: "靠他人补助维持经济占比", value: 0, hint: "父母、伴侣、家庭或外部资助。占比越高，越说明当前仍靠确定性供养打底，学生尤其会被推向播种型。" },
       { id: "assetIncome", label: "资产性收入占比", value: 16, hint: "租金、股息、利息、产权收益。" },
       { id: "projectIncome", label: "项目/提成/副业机会占比", value: 28, hint: "越高越接近逐浪型，代表事件捕获能力。" },
       { id: "specIncome", label: "套利/投机/信息差收入占比", value: 10, hint: "越高越接近借风型，但需要承受高波动。" },
@@ -87,13 +88,14 @@ export const targetStrategies = {
 
 export function calculate(state, situationSignal = { x: 0, y: 0 }) {
       const s = state;
+      const supportIncome = s.supportIncome ?? 0;
       const farmer = clamp(
-        s.stableIncome * 0.52 + s.skill * 0.22 + s.attention * 0.16 +
+        s.stableIncome * 0.52 + supportIncome * 0.86 + s.skill * 0.22 + s.attention * 0.16 +
         s.familyLoad * 0.10 - s.moveRoom * 0.08
       );
       const fisher = clamp(
         s.projectIncome * 0.52 + s.moveRoom * 0.20 + s.volatility * 0.16 +
-        s.skill * 0.08 - s.familyLoad * 0.10
+        s.skill * 0.08 - s.familyLoad * 0.10 - supportIncome * 0.14
       );
       const landlord = clamp(
         s.assetIncome * 0.62 + s.savings * 2.1 + s.institution * 0.15 -
@@ -101,7 +103,7 @@ export function calculate(state, situationSignal = { x: 0, y: 0 }) {
       );
       const pirate = clamp(
         s.specIncome * 0.58 + s.volatility * 0.18 + s.moveRoom * 0.10 +
-        (100 - s.institution) * 0.08 - s.savings * 0.55
+        (100 - s.institution) * 0.08 - s.savings * 0.55 - supportIncome * 0.18
       );
 
       const land = (farmer + landlord) / 2;
