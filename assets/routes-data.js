@@ -28,7 +28,7 @@ export const personalityMeta = {
       { name: "黑泽明", route: "播种→筑基", key: "build", path: ["plant", "build"], text: "三十年打磨剪辑和分镜，方法论成了基础设施。", method: "把审美拆成可训练动作：观察、分镜、节奏、剪辑。真正能留下来的不是灵感，是稳定的工作法。" },
       { name: "杜甫", route: "播种→筑基", key: "build", path: ["plant", "build"], text: "颠沛流离中写下诗史，苦地变成纪念碑。", method: "把个人困境写进更大的时代结构。你可以把压力变成记录能力，而不是只把它当消耗。" },
       { name: "弗洛伊德", route: "播种→筑基", key: "build", path: ["plant", "build"], text: "在维也纳诊室里听人说话，听出一套基础设施。", method: "在一个场景里长期重复，直到细节自己说话。你的入口可以很窄，但观察要足够深。" },
-      { name: "尼采", route: "播种→借风", key: "wind", path: ["plant", "wind"], text: "从古典语文学出发，用锤子哲学炸开旧道德。", method: "先深读，再决裂。你可以先在一个传统里学会语言，然后用自己的判断重写它。" },
+      { name: "尼采", route: "播种→借风", key: "wind", path: ["plant", "wind"], text: "从古典语文学出发，用尖锐的文字炸碎旧道德。", method: "先深读，再决裂。你可以先在一个传统里学会语言，然后用自己的判断重写它。" },
       { name: "马克思", route: "播种→借风", key: "wind", path: ["plant", "wind"], text: "大英博物馆里耕作三十年，产出改写世界的武器。", method: "用大量研究建立底盘，再把复杂现实压缩成可传播、可组织、可行动的工具。" },
       { name: "王阳明", route: "播种→借风", key: "wind", path: ["plant", "wind", "plant"], text: "龙场悟道前是书生，之后变成能打仗的哲学家。", method: "认知必须进入行动。对你来说，知识不是收藏品，而是遇到局势时还能站住的内在秩序。" },
       { name: "杜尚", route: "播种→借风", key: "wind", path: ["plant", "wind"], text: "规矩画了十年画，再用小便池改写艺术定义。", method: "先学会系统内部的规则，再找到最小但最致命的破口。创新不是乱来，是准确地移动定义。" },
