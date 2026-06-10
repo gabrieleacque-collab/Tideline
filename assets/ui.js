@@ -19,6 +19,22 @@ const $ = id => document.getElementById(id);
 const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
 const setHTML = (id, html) => { const el = $(id); if (el) el.innerHTML = html; };
 
+function createManualInitialState() {
+  return { ...createDefaultState(), ...Object.fromEntries(inputs.map(item => [item.id, 0])) };
+}
+
+function gradeLabel(value, labels) {
+  const index = Math.min(labels.length - 1, Math.floor(Number(value) / (101 / labels.length)));
+  return labels[Math.max(0, index)];
+}
+
+function formatInputValue(item, value) {
+  if (item.id === 'skill' || item.id === 'attention') return gradeLabel(value, ['差', '较差', '一般', '良好', '优秀']);
+  if (item.id === 'institution') return gradeLabel(value, ['很低', '较低', '一般', '较高', '很高']);
+  if (item.id === 'familyLoad') return gradeLabel(value, ['很轻', '较轻', '一般', '较重', '很重']);
+  return `${value}${item.unit ?? '%'}`;
+}
+
 function buildSliderForm(formId = 'form', onChange = updateTest) {
   const form = $(formId);
   if (!form) return;
@@ -26,13 +42,14 @@ function buildSliderForm(formId = 'form', onChange = updateTest) {
     const min = item.min ?? 0;
     const max = item.max ?? 100;
     const unit = item.unit ?? '%';
-    return `<label class="slider-row" title="${item.hint}"><span class="slider-label"><strong>${item.label}</strong><span class="value" id="value-${formId}-${item.id}">${state[item.id] ?? item.value}${unit}</span></span><input type="range" min="${min}" max="${max}" value="${state[item.id] ?? item.value}" id="${formId}-${item.id}" data-input-id="${item.id}"></label>`;
+    const value = state[item.id] ?? item.value;
+    return `<label class="slider-row" title="${item.hint}"><span class="slider-label"><strong>${item.label}</strong><span class="value" id="value-${formId}-${item.id}">${formatInputValue(item, value)}</span></span><input type="range" min="${min}" max="${max}" value="${value}" id="${formId}-${item.id}" data-input-id="${item.id}"></label>`;
   }).join('');
   inputs.forEach(item => {
     const el = $(`${formId}-${item.id}`);
     el?.addEventListener('input', () => {
       state[item.id] = Number(el.value);
-      setText(`value-${formId}-${item.id}`, `${el.value}${item.unit ?? '%'}`);
+      setText(`value-${formId}-${item.id}`, formatInputValue(item, el.value));
       onChange();
     });
   });
@@ -42,6 +59,16 @@ function buildForm() {
   buildSliderForm('form', updateTest);
   $('situationApply')?.addEventListener('click', () => applySituationSignal());
   $('situationInput')?.addEventListener('input', () => setText('situationHint', '写完后点“更新定位”。后台接入 AI 后会读取这里；现在先用关键词轻轻修正定位点。'));
+}
+
+function initManualPage() {
+  const snapshot = loadTestSnapshot();
+  if (snapshot) loadSnapshotIntoState(snapshot);
+  state = createManualInitialState();
+  situationSignal = { x: 0, y: 0, note: '' };
+  targetPosition = null;
+  buildForm();
+  bindGenerate();
 }
 
 function applySituationSignal(text = $('situationInput')?.value || '') {
@@ -145,10 +172,21 @@ function bindTrajectory() {
 }
 
 function bindGenerate() {
-  $('generateTideCardButton')?.addEventListener('click', () => {
+  $('generateTideCardButton')?.addEventListener('click', event => {
+    event.preventDefault();
     const scores = currentScores();
-    const pseudoAnswer = { scenarioId: 0, option: { structuralLabel: dominantKey(scores) === 'plant' ? 'farmer' : dominantKey(scores) === 'surf' ? 'fisher' : dominantKey(scores) === 'build' ? 'landlord' : 'pirate', paramOffsets: {} } };
-    saveTestSnapshot({ state, situationSignal, targetPosition: targetPosition || { x: scores.x, y: scores.y }, coordinateRecords, answers: [pseudoAnswer] });
+    const quizCompleted = quizAnswers.filter(answer => answer?.scenarioId).length >= scenarios.length;
+    const nextPageAfterManual = quizCompleted ? 'result.html' : 'quiz.html';
+    saveTestSnapshot({
+      state,
+      situationSignal,
+      targetPosition: targetPosition || { x: scores.x, y: scores.y },
+      coordinateRecords,
+      answers: quizAnswers,
+      quizCompleted,
+      manualCompleted: true
+    });
+    location.href = nextPageAfterManual;
   });
 }
 
@@ -174,18 +212,22 @@ function chooseQuizOption(key) {
     renderQuiz();
     return;
   }
-  state = applyScenarioOffsets(createDefaultState(), quizAnswers);
+  const existing = loadTestSnapshot();
+  const existingManualDone = Boolean(existing?.manualCompleted);
+  state = existingManualDone ? { ...createDefaultState(), ...(existing?.state || {}) } : applyScenarioOffsets(createDefaultState(), quizAnswers);
   const scores = calculate(state);
   const personality = personalityResultFromAnswers(quizAnswers, scores);
   saveTestSnapshot({
     state,
     answers: quizAnswers,
     personalityCode: personality.role,
-    situationSignal,
-    targetPosition: personality.point,
-    coordinateRecords: []
+    situationSignal: existing?.situationSignal || situationSignal,
+    targetPosition: existing?.targetPosition || personality.point,
+    coordinateRecords: existing?.coordinateRecords || [],
+    quizCompleted: true,
+    manualCompleted: existingManualDone
   });
-  location.href = 'result.html';
+  location.href = existingManualDone ? 'result.html' : 'test.html';
 }
 
 function loadSnapshotIntoState(snapshot) {
@@ -194,6 +236,10 @@ function loadSnapshotIntoState(snapshot) {
   targetPosition = snapshot?.targetPosition || null;
   coordinateRecords = snapshot?.coordinateRecords || [];
   quizAnswers = snapshot?.answers || [];
+}
+
+function hasCompletedBothModes(snapshot) {
+  return Boolean(snapshot?.manualCompleted) && Boolean(snapshot?.quizCompleted) && (snapshot?.answers || []).filter(answer => answer?.scenarioId).length >= scenarios.length;
 }
 
 function personalityResultFromAnswers(answers = [], scores = currentScores()) {
@@ -259,14 +305,19 @@ function renderResultPersonality() {
   currentPersonality = personalityResultFromAnswers(quizAnswers, scores);
   const meta = currentPersonality.meta;
   const hero = document.querySelector('.personality-hero');
+  const realAnswers = quizAnswers.filter(answer => answer?.scenarioId);
+  const selfRole = inferSelfPosition(realAnswers);
+  const structRole = inferStructuralPosition(state);
+  const selfName = (roleMeta[selfRole] || roleMeta.farmer).name;
+  const structName = (roleMeta[structRole] || roleMeta.farmer).name;
+  const resultLine = selfRole === structRole ? `自认为是${selfName}，实际上确实是${structName}` : `自认为是${selfName}，实际上是${structName}`;
+  const reading = crossReadings[selfRole]?.[structRole];
   hero?.style.setProperty('--persona-tone', meta.tone);
-  setText('personalityResultName', meta.name);
-  setText('personalityResultLine', meta.line);
+  setText('personalityResultName', resultLine);
+  setText('personalityResultLine', reading?.title || meta.line);
   setText('personalityResultBody', personalityBody(currentPersonality.role));
   renderDiagnosticQuad(currentPersonality, scores);
   updateTest();
-  renderParamGroups();
-  renderTrajectory();
   renderCrossReading(scores);
   renderExpectedGreats(scores, currentPersonality);
 }
@@ -323,19 +374,14 @@ function renderCrossReading(scores = currentScores()) {
 
 function renderResultPage() {
   const snapshot = loadTestSnapshot();
-  if (!snapshot) {
+  if (!snapshot || !hasCompletedBothModes(snapshot)) {
     $('emptyResult')?.classList.add('show');
     $('resultContent')?.classList.add('hidden');
     return;
   }
   loadSnapshotIntoState(snapshot);
   renderResultPersonality();
-  buildSliderForm('resultTuningForm', () => {
-    saveTestSnapshot({ state, answers: quizAnswers, situationSignal, targetPosition, coordinateRecords });
-    renderResultPersonality();
-  });
   enableTargetDrag();
-  bindTrajectory();
 }
 
 function renderExpectedGreats(scores = currentScores(), personality = currentPersonality) {
@@ -441,7 +487,7 @@ function startParticles() {
 const page = document.body.dataset.page;
 startParticles();
 if (page === 'quiz') renderQuiz();
-if (page === 'test') { buildForm(); bindGenerate(); }
+if (page === 'test') initManualPage();
 if (page === 'result') renderResultPage();
 if (page === 'routes') renderFamousRoutes();
 if (page === 'model') renderSimpleTheory();

@@ -39,6 +39,21 @@ export const rolePositions = {
   mixed: { x: 50, y: 50 }
 };
 
+const comparisonBaselines = {
+  stableIncome: 62,
+  supportIncome: 0,
+  assetIncome: 16,
+  projectIncome: 28,
+  specIncome: 10,
+  savings: 8,
+  debt: 32,
+  skill: 66,
+  institution: 48,
+  familyLoad: 42,
+  attention: 70,
+  retainedPerMonth: 6000
+};
+
 export function roleLabel(role) {
   return roleMeta[role]?.name || role;
 }
@@ -94,12 +109,12 @@ function distance(a, b) {
 }
 
 function aboveDefault(state, key, amount = thresholds.high) {
-  const base = inputs.find(item => item.id === key)?.value ?? 0;
+  const base = comparisonBaselines[key] ?? inputs.find(item => item.id === key)?.value ?? 0;
   return (state[key] ?? 0) - base >= amount;
 }
 
 function belowDefault(state, key, amount = thresholds.high) {
-  const base = inputs.find(item => item.id === key)?.value ?? 0;
+  const base = comparisonBaselines[key] ?? inputs.find(item => item.id === key)?.value ?? 0;
   return base - (state[key] ?? 0) >= amount;
 }
 

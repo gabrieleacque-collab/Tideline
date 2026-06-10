@@ -1670,6 +1670,8 @@
 
 .result-shell {
   width: min(1360px, calc(100% - 36px));
+  font-size: 13px;
+  line-height: 1.82;
 }
 
 .diagnosis-result {
@@ -1701,8 +1703,8 @@
 .personality-hero {
   display: grid;
   place-items: center;
-  min-height: calc(100vh - 150px);
-  padding: clamp(28px, 6vw, 72px);
+  min-height: min(560px, calc(100vh - 150px));
+  padding: clamp(28px, 5vw, 58px);
   text-align: center;
   background:
     radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--persona-tone, var(--tide)) 20%, transparent), transparent 34%),
@@ -1717,18 +1719,19 @@
 
 .personality-hero h2 {
   margin: 0;
+  max-width: 960px;
   color: var(--persona-tone, var(--tide));
-  font-size: clamp(58px, 13vw, 150px);
-  line-height: .9;
-  font-weight: 780;
+  font-size: clamp(26px, 4vw, 54px);
+  line-height: 1.12;
+  font-weight: 730;
 }
 
 .personality-hero > p:last-child {
   max-width: 620px;
-  margin: 20px 0 0;
+  margin: 18px 0 0;
   color: var(--stone);
-  font-size: clamp(15px, 2vw, 24px);
-  line-height: 1.55;
+  font-size: clamp(13px, 1.35vw, 18px);
+  line-height: 1.8;
 }
 
 .scroll-cue {
@@ -1838,8 +1841,9 @@
 
 .deep-diagnosis {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   padding-bottom: 42px;
+  line-height: 1.9;
 }
 
 .deep-diagnosis details {
@@ -1848,10 +1852,10 @@
 
 .deep-diagnosis summary {
   cursor: pointer;
-  min-height: 58px;
-  padding: 18px;
+  min-height: 54px;
+  padding: 16px 18px;
   color: var(--text);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   border-bottom: var(--hairline) solid rgba(214, 200, 170, .12);
 }
@@ -2240,14 +2244,16 @@
 }
 
 .cross-title {
-  margin: 0 0 10px;
-  font-size: 19px;
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.55;
   letter-spacing: 0.02em;
 }
 
 .cross-body {
-  margin: 0 0 10px;
-  line-height: 1.85;
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.9;
   color: rgba(255, 255, 255, 0.82);
 }
 
@@ -2257,7 +2263,8 @@
   border-left: 2px solid var(--tide);
   background: rgba(99, 199, 189, 0.07);
   border-radius: 0 10px 10px 0;
-  line-height: 1.8;
+  font-size: 13px;
+  line-height: 1.9;
   color: rgba(255, 255, 255, 0.86);
 }
 

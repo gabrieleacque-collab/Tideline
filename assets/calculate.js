@@ -1,16 +1,16 @@
 export const inputs = [
-      { id: "stableIncome", label: "稳定工资/固定现金流占比", value: 62, hint: "越高越接近农民，代表时间换钱的底盘。" },
+      { id: "stableIncome", label: "稳定工资/固定现金流占比", value: 0, hint: "越高越接近农民，代表时间换钱的底盘。" },
       { id: "supportIncome", label: "靠他人补助维持经济占比", value: 0, hint: "父母、伴侣、家庭或外部资助。占比越高，越说明当前仍靠确定性供养打底，学生尤其会被推向农民。" },
-      { id: "assetIncome", label: "资产性收入占比", value: 16, hint: "租金、股息、利息、产权收益。" },
-      { id: "projectIncome", label: "项目/提成/副业机会占比", value: 28, hint: "越高越接近渔民，代表事件捕获能力。" },
-      { id: "specIncome", label: "套利/投机/信息差收入占比", value: 10, hint: "越高越接近海盗，但需要承受高波动。" },
-      { id: "savings", label: "手里够花多久", value: 8, min: 0, max: 24, unit: "月", hint: "手里钱越厚，越能慢慢等机会。" },
-      { id: "debt", label: "债务压力", value: 32, hint: "房贷、消费贷、经营贷对自由度的挤压。" },
-      { id: "skill", label: "技能复利", value: 66, hint: "一个领域持续提高时薪和判断力的能力。" },
-      { id: "institution", label: "制度/平台依赖", value: 48, hint: "依赖单位、平台、牌照、流量入口的程度。" },
-      { id: "familyLoad", label: "家庭与固定责任负载", value: 42, hint: "越高越需要稳定底线。" },
-      { id: "attention", label: "长期专注度", value: 70, hint: "能否长期守住一个海域，直到真正熟悉它。" },
-      { id: "retainedPerMonth", label: "每月真正留下的钱", value: 6000, min: 0, max: 50000, unit: "元", hint: "收入减去支出、还债、必要责任后，真正能留下的钱。" }
+      { id: "assetIncome", label: "资产性收入占比", value: 0, hint: "租金、股息、利息、产权收益。" },
+      { id: "projectIncome", label: "项目/提成/副业机会占比", value: 0, hint: "越高越接近渔民，代表事件捕获能力。" },
+      { id: "specIncome", label: "套利/投机/信息差收入占比", value: 0, hint: "越高越接近海盗，但需要承受高波动。" },
+      { id: "savings", label: "手里够花多久", value: 0, min: 0, max: 24, unit: "月", hint: "手里钱越厚，越能慢慢等机会。" },
+      { id: "debt", label: "债务压力", value: 0, hint: "房贷、消费贷、经营贷对自由度的挤压。" },
+      { id: "skill", label: "技能复利", value: 0, hint: "一个领域持续提高时薪和判断力的能力。" },
+      { id: "institution", label: "制度/平台依赖", value: 0, hint: "依赖单位、平台、牌照、流量入口的程度。" },
+      { id: "familyLoad", label: "家庭与固定责任负载", value: 0, hint: "越高越需要稳定底线。" },
+      { id: "attention", label: "长期专注度", value: 0, hint: "能否长期守住一个海域，直到真正熟悉它。" },
+      { id: "retainedPerMonth", label: "每月真正留下的钱", value: 0, min: 0, max: 50000, unit: "元", hint: "收入减去支出、还债、必要责任后，真正能留下的钱。" }
     ];
 
 export const simpleTheory = {
