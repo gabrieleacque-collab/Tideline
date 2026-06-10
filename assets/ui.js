@@ -1,10 +1,10 @@
-import { inputs, simpleTheory, calculate, conclusion, dominant, dominantKey, round, analyzeTargetPath, targetNameFromPosition } from './calculate.js?v=20260610b';
-import { createDefaultState, saveTestSnapshot, loadTestSnapshot, clearTestSnapshot } from './state.js?v=20260610b';
-import { personalityMeta, renderRouteSparkline, getVisibleFamousRoutes } from './routes-data.js?v=20260610b';
-import { scenarios } from './scenarios.js?v=20260610b';
-import { applyScenarioOffsets, roleToKey, rolePositions, inferSelfPosition, inferStructuralPosition } from './diagnose.js?v=20260610b';
-import { roleMeta } from './diagnoses.js?v=20260610b';
-import { crossReadings } from './cross.js?v=20260610b';
+import { inputs, simpleTheory, calculate, conclusion, dominant, dominantKey, round, analyzeTargetPath, targetNameFromPosition } from './calculate.js?v=20260611a';
+import { createDefaultState, saveTestSnapshot, loadTestSnapshot, clearTestSnapshot } from './state.js?v=20260611a';
+import { personalityMeta, renderRouteSparkline, getVisibleFamousRoutes, targetKeyFromPosition } from './routes-data.js?v=20260611a';
+import { scenarios } from './scenarios.js?v=20260611a';
+import { applyScenarioOffsets, roleToKey, rolePositions, inferSelfPosition, inferStructuralPosition } from './diagnose.js?v=20260611a';
+import { roleMeta } from './diagnoses.js?v=20260611a';
+import { crossReadings } from './cross.js?v=20260611a';
 
 let state = createDefaultState();
 let targetPosition = null;
@@ -317,16 +317,6 @@ function renderParamGroups() {
   setHTML('paramGroups', groups.map(group => `<section class="param-group" style="--group-tone:${group[2]}"><h4>${group[0]}</h4>${group[1].map(key => `<div class="param-row"><span>${labels[key]?.label || key}</span><strong>${state[key] ?? 0}${labels[key]?.unit ?? '%'}</strong></div>`).join('')}</section>`).join(''));
 }
 
-function personalityBody(role) {
-  const bodies = {
-    farmer: '你更接近农民：相信稳定、长期投入和持续劳动。你的优势是能把一件事做深，风险是太容易只在生产端用力，而忽略流通、定价和资产沉淀。',
-    fisher: '你更接近渔民：靠判断、手艺和时机在变化里获得收入。你的优势是灵活，风险是太依赖外部水域，需要慢慢沉淀自己的客户、作品和规则。',
-    landlord: '你更接近地主：重视稳定资源、平台位置和可持续收益。你的优势是能把价值留下来，风险是过度相信既有地盘，忘了重新劳动和更新能力。',
-    pirate: '你更接近海盗：对速度、信息差和窗口期很敏感。你的优势是能快速抓住机会，风险是如果只靠截流和波动，最后会缺少真正能生根的东西。'
-  };
-  return bodies[role] || bodies.farmer;
-}
-
 function renderResultPersonality() {
   const scores = calculate(state, situationSignal);
   currentPersonality = personalityResultFromAnswers(quizAnswers, scores);
@@ -342,7 +332,6 @@ function renderResultPersonality() {
   hero?.style.setProperty('--persona-tone', meta.tone);
   setText('personalityResultName', resultLine);
   setText('personalityResultLine', reading?.title || meta.line);
-  setText('personalityResultBody', personalityBody(currentPersonality.role));
   renderDiagnosticQuad(currentPersonality, scores);
   updateTest();
   renderCrossReading(scores);
@@ -414,8 +403,7 @@ function renderResultPage() {
 function renderExpectedGreats(scores = currentScores(), personality = currentPersonality) {
   const mount = $('expectedGreatCards');
   if (!mount) return;
-  const targetRole = personality?.role || 'farmer';
-  const key = roleToKey[targetRole] || 'plant';
+  const key = targetKeyFromPosition(targetPosition || { x: scores.x, y: scores.y }) || roleToKey[personality?.role] || 'plant';
   const matched = getVisibleFamousRoutes().filter(person => person.key === key || person.path.includes(key)).slice(0, 3);
   mount.innerHTML = matched.map(person => `<article class="expected-card"><h4>${person.name}</h4><span>${person.route}</span><p>${person.text}</p></article>`).join('');
 }

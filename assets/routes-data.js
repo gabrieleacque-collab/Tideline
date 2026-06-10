@@ -75,18 +75,18 @@ export const personalityMeta = {
       { name: "康德", route: "农民→农民→农民", key: "plant", path: ["plant", "plant", "plant"], text: "一生没离开柯尼斯堡，却重新划定了人类认识的版图。", method: "稳定的生活可以服务于极大的思想运动。外部移动少，不代表内部问题小。" },
       { name: "任正非", route: "农民→渔民→农民", key: "surf", path: ["plant", "surf", "plant"], text: "军人纪律打底，中年下海创业，最后回到研发和组织。", method: "以纪律打底，进入竞争抓住机会，再把压力重新压回研发、流程和人才密度。" },
       { name: "诸葛亮", route: "农民→渔民→农民", key: "surf", path: ["plant", "surf", "plant"], text: "躬耕南阳，再入乱世辅佐，始终靠后勤和治理取胜。", method: "先建立判断和秩序，再进入复杂局势。真正支撑博弈的不是奇谋，而是后勤、纪律和长期治理。" },
-      { name: "张爱玲", route: "复杂轨迹", key: "plant", path: ["plant", "surf", "plant"], text: "从上海到香港再到美国，环境换了几轮，底色始终是她自己的。", method: "不同阶段可以做不同的事。关键不是环境多热闹，而是你是否保留了自己看世界的方式。" },
-      { name: "谷崎润一郎", route: "复杂轨迹", key: "plant", path: ["surf", "plant"], text: "离开东京文坛迁居关西，写出《阴翳礼赞》。", method: "从热闹中撤回传统和身体感。你真正要做的事，可能在一次迁移之后才显形。" },
-      { name: "黑格尔", route: "复杂轨迹", key: "build", path: ["plant", "wind", "build"], text: "从耶拿的穷讲师，到一部《精神现象学》打开局面，最后在柏林大学建立体系。", method: "先长期搭概念，再让一部作品打开局面，最后把体系放进制度里。" },
-      { name: "弗里达·卡罗", route: "复杂轨迹", key: "plant", path: ["plant", "plant"], text: "车祸把她困在床上，她就在床上画出最烈的画。", method: "被迫的限制也能成为创作的土壤。问题不是自由多少，而是能否把限制转成形式。" },
-      { name: "阿甘本", route: "复杂轨迹", key: "build", path: ["plant", "surf", "build"], text: "从语文学出发，穿行在福柯和海德格尔之间，最后建立自己的概念体系。", method: "在学术谱系里不断找边界问题，最终要建立自己的概念房子。" },
-      { name: "三岛由纪夫", route: "复杂轨迹", key: "wind", path: ["plant", "wind"], text: "从战后文坛成名到投身右翼政治，最后用身体本身做了表达。", method: "这是高风险路线。它提示你：表达越极端，越要分清自己是在生产作品，还是在燃烧自己。" },
-      { name: "Thomas Bernhard", route: "复杂轨迹", key: "wind", path: ["plant", "wind"], text: "一辈子待在奥地利写奥地利，重复到产生了攻击力。", method: "长期重复也能形成力量。你的声音如果足够准确，不必追风也会自己生风。" },
-      { name: "坂本龙一", route: "复杂轨迹", key: "plant", path: ["surf", "plant", "plant"], text: "从 YMO 的流行浪潮到电影配乐，最后在病房里工作到最后一天。", method: "可以在不同媒介之间移动，但保持对声音的细密感。越到后期，越要让作品变轻、变准。" },
-      { name: "妹岛和世", route: "复杂轨迹", key: "surf", path: ["plant", "surf", "plant"], text: "在伊东丰雄事务所学艺，再以 SANAA 的轻与透明立足世界。", method: "先在别人那里学会规则，再用自己的语言打开新局。轻不是弱，是控制力。" },
-      { name: "齐白石", route: "复杂轨迹", key: "surf", path: ["plant", "surf"], text: "从乡下木匠到北京画坛，五十多岁还敢推翻自己重来。", method: "晚起步不是问题。带着自己的出身和题材进入新环境，反而是别人伪装不来的真。" },
-      { name: "瓦格纳", route: "复杂轨迹", key: "plant", path: ["wind", "plant"], text: "流亡二十年，却用二十六年磨完了《指环》。", method: "激进的想象需要漫长的工期。可以有很大的野心，但必须给它足够长的施工时间。" },
-      { name: "齐格蒙特·鲍曼", route: "复杂轨迹", key: "build", path: ["surf", "build"], text: "被驱逐三次，把流亡经验写成了「液态现代性」。", method: "把漂泊的经验变成理论模型。不稳定的经历一旦被想清楚，也能成为别人理解时代的工具。" }
+      { name: "张爱玲", route: "农民→渔民→农民", key: "plant", path: ["plant", "surf", "plant"], text: "从上海到香港再到美国，环境换了几轮，底色始终是她自己的。", method: "不同阶段可以做不同的事。关键不是环境多热闹，而是你是否保留了自己看世界的方式。" },
+      { name: "谷崎润一郎", route: "渔民→农民", key: "plant", path: ["surf", "plant"], text: "离开东京文坛迁居关西，写出《阴翳礼赞》。", method: "从热闹中撤回传统和身体感。你真正要做的事，可能在一次迁移之后才显形。" },
+      { name: "黑格尔", route: "农民→海盗→地主", key: "build", path: ["plant", "wind", "build"], text: "从耶拿的穷讲师，到一部《精神现象学》打开局面，最后在柏林大学建立体系。", method: "先长期搭概念，再让一部作品打开局面，最后把体系放进制度里。" },
+      { name: "弗里达·卡罗", route: "农民→农民", key: "plant", path: ["plant", "plant"], text: "车祸把她困在床上，她就在床上画出最烈的画。", method: "被迫的限制也能成为创作的土壤。问题不是自由多少，而是能否把限制转成形式。" },
+      { name: "阿甘本", route: "农民→渔民→地主", key: "build", path: ["plant", "surf", "build"], text: "从语文学出发，穿行在福柯和海德格尔之间，最后建立自己的概念体系。", method: "在学术谱系里不断找边界问题，最终要建立自己的概念房子。" },
+      { name: "三岛由纪夫", route: "农民→海盗", key: "wind", path: ["plant", "wind"], text: "从战后文坛成名到投身右翼政治，最后用身体本身做了表达。", method: "这是高风险路线。它提示你：表达越极端，越要分清自己是在生产作品，还是在燃烧自己。" },
+      { name: "Thomas Bernhard", route: "农民→海盗", key: "wind", path: ["plant", "wind"], text: "一辈子待在奥地利写奥地利，重复到产生了攻击力。", method: "长期重复也能形成力量。你的声音如果足够准确，不必追风也会自己生风。" },
+      { name: "坂本龙一", route: "渔民→农民→农民", key: "plant", path: ["surf", "plant", "plant"], text: "从 YMO 的流行浪潮到电影配乐，最后在病房里工作到最后一天。", method: "可以在不同媒介之间移动，但保持对声音的细密感。越到后期，越要让作品变轻、变准。" },
+      { name: "妹岛和世", route: "农民→渔民→农民", key: "surf", path: ["plant", "surf", "plant"], text: "在伊东丰雄事务所学艺，再以 SANAA 的轻与透明立足世界。", method: "先在别人那里学会规则，再用自己的语言打开新局。轻不是弱，是控制力。" },
+      { name: "齐白石", route: "农民→渔民", key: "surf", path: ["plant", "surf"], text: "从乡下木匠到北京画坛，五十多岁还敢推翻自己重来。", method: "晚起步不是问题。带着自己的出身和题材进入新环境，反而是别人伪装不来的真。" },
+      { name: "瓦格纳", route: "海盗→农民", key: "plant", path: ["wind", "plant"], text: "流亡二十年，却用二十六年磨完了《指环》。", method: "激进的想象需要漫长的工期。可以有很大的野心，但必须给它足够长的施工时间。" },
+      { name: "齐格蒙特·鲍曼", route: "渔民→地主", key: "build", path: ["surf", "build"], text: "被驱逐三次，把流亡经验写成了「液态现代性」。", method: "把漂泊的经验变成理论模型。不稳定的经历一旦被想清楚，也能成为别人理解时代的工具。" }
     ];
 
     export const DAILY_ROUTE_UNLOCK_COUNT = 3;

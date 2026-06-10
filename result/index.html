@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
+  <base href="../">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <base href="../">
   <title>潮汐线 TIDELINE · 结果</title>
-  <link rel="stylesheet" href="assets/styles.css?v=20260610b">
-  <link rel="stylesheet" href="assets/mobile-fixes.css?v=20260610b">
+  <link rel="stylesheet" href="assets/styles.css?v=20260611a">
+  <link rel="stylesheet" href="assets/mobile-fixes.css?v=20260611a">
+  <link rel="stylesheet" href="assets/noir-experiment.css?v=20260611x">
 </head>
 <body data-page="result">
   <canvas id="network" aria-hidden="true"></canvas>
@@ -32,14 +33,13 @@
       </section>
 
       <section class="deep-diagnosis" data-section="personality-depth">
-        <details class="panel" open><summary>人格说明</summary><div class="panel-body"><p id="personalityResultBody"></p></div></details>
         <details class="panel" open><summary>双重定位 · 你以为的你 × 现实的拉力</summary><div class="panel-body">
           <div class="cross-locked hidden" id="crossLocked"><p>双重定位需要读取你的答题选择。完成情境问答之后，这里会对照两个位置：<strong>你以为的自己</strong>（你在十个处境里做的选择），和<strong>现实的拉力</strong>（你的参数算出来的位置）。两者对不对得上，往往比结果本身更说明问题。</p><a class="hero-btn" href="quiz.html">去做情境问答</a></div>
           <div id="crossContent">
             <div class="cross-roles">
-              <div class="cross-chip" id="crossSelfChip"><small>你以为的你 · 来自你的选择</small><strong id="crossSelfName">—</strong><span id="crossSelfLine"></span></div>
+              <div class="cross-chip" id="crossSelfChip"><small>你以为的自己</small><strong id="crossSelfName">—</strong><span id="crossSelfLine"></span></div>
               <span class="cross-arrow" aria-hidden="true">×</span>
-              <div class="cross-chip" id="crossStructChip"><small>现实的拉力 · 来自你的参数</small><strong id="crossStructName">—</strong><span id="crossStructLine"></span></div>
+              <div class="cross-chip" id="crossStructChip"><small>实际的自己</small><strong id="crossStructName">—</strong><span id="crossStructLine"></span></div>
             </div>
             <h3 class="cross-title" id="crossTitle"></h3>
             <p class="cross-body" id="crossBody"></p>
@@ -49,10 +49,10 @@
         </div></details>
         <section class="target-card target-before-map"><span class="section-note">Target Drag / Future Position</span><h3>拖动光点，选择想去的位置</h3><p>现在两个点之间的连线，是你理想和现实的路程。实心点是现实的你，空心环是你以为的你；你可以拖动亮点，看看自己想去哪里。</p></section>
         <details class="panel" open><summary>四元坐标图</summary><div class="panel-body quad-wrap"><div class="quad diagnostic-quad" id="diagnosticQuad"><span class="axis top">占有 / 被动收益</span><span class="axis bottom">劳动 / 主动收益</span><span class="axis left">陆地经济 / 确定性</span><span class="axis right">海洋经济 / 不确定性</span><div class="node landlord"><strong>地主</strong><span>地契</span></div><div class="node pirate"><strong>海盗</strong><span>截流</span></div><div class="node farmer"><strong>农民</strong><span>生产</span></div><div class="node fisher"><strong>渔民</strong><span>应变</span></div><div class="position-dot" id="dot"></div><div class="position-label" id="dotLabel">你的结果</div><div class="self-position-dot" id="selfMarker" style="display:none"><em>你以为</em></div><svg class="trajectory-overlay" id="trajectoryOverlay" viewBox="0 0 100 100" aria-hidden="true"><line id="crossLine" x1="0" y1="0" x2="0" y2="0" style="display:none"></line><polyline id="trajectoryPolyline" points=""></polyline><g id="trajectoryPoints"></g></svg><div class="target-path" id="targetPath" aria-hidden="true"></div><button class="target-dot" id="targetDot" type="button" aria-label="拖动光点，选择想去的位置"></button></div><div class="score-grid"><div class="score" style="--tone: var(--gold)"><span>地主分</span><strong id="scoreLandlord">24</strong></div><div class="score" style="--tone: var(--red)"><span>海盗分</span><strong id="scorePirate">18</strong></div><div class="score" style="--tone: var(--green)"><span>农民分</span><strong id="scoreFarmer">70</strong></div><div class="score" style="--tone: var(--blue)"><span>渔民分</span><strong id="scoreFisher">46</strong></div></div></div></details>
-        <details class="panel"><summary>走成我期望轨迹的伟人</summary><div class="panel-body"><div class="expected-head"><div><span class="section-note">Expected Route / 参考路径</span><h3>看看位置和你相近的人是怎么走的</h3><p>根据你的结果，挑出几条值得参考的真实路径。</p></div><a class="open-famous" id="openFamousRoutes" href="routes.html">查看更多</a></div><div class="expected-cards" id="expectedGreatCards"></div></div></details>
+        <details class="panel"><summary>走成我期望轨迹的伟人</summary><div class="panel-body"><div class="expected-head"><div><span class="section-note">Expected Route / 参考路径</span><h3>看看接近你目标方向的人怎么走</h3><p>拖动光点后，平台会按你想去的位置挑出几张参考卡。</p></div><a class="open-famous" id="openFamousRoutes" href="routes.html">查看更多</a></div><div class="expected-cards" id="expectedGreatCards"></div></div></details>
       </section>
     </section>
   </main>
-  <script type="module" src="assets/ui.js?v=20260610b"></script>
+  <script type="module" src="assets/ui.js?v=20260611a"></script>
 </body>
 </html>
