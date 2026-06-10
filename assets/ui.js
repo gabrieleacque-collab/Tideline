@@ -356,7 +356,7 @@ function renderCrossReading(scores = currentScores()) {
   const aligned = selfRole === structRole;
   setText('crossHint', aligned
     ? '下方坐标图里：实心点是现实的你，空心环是你以为的你。两个点几乎重合——你选择的活法和你真实的处境是同一个。'
-    : '下方坐标图里：实心点是现实的你，空心环是你以为的你。两点之间的虚线，就是这段解读说的那条缝。');
+    : '下方坐标图里：实心点是现实的你，空心环是你以为的你。两点之间的虚线，就是上面这段话说的差距。');
   const selfPoint = rolePositions[selfRole] || rolePositions.farmer;
   if (marker) {
     marker.style.display = '';

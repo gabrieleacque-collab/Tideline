@@ -20,10 +20,24 @@ const types = {
 http.createServer((req, res) => {
   let urlPath = decodeURIComponent(req.url.split("?")[0]);
   if (urlPath === "/") urlPath = "/index.html";
-  const file = path.resolve(root, `.${urlPath}`);
-  if (!file.startsWith(root)) {
+  const requested = path.resolve(root, `.${urlPath}`);
+  if (!requested.startsWith(root)) {
     res.writeHead(403);
     res.end("forbidden");
+    return;
+  }
+  const candidates = [
+    requested,
+    path.join(requested, "index.html"),
+    path.resolve(root, `.${urlPath}.html`)
+  ];
+  const file = candidates.find(candidate => {
+    if (!candidate.startsWith(root) || !fs.existsSync(candidate)) return false;
+    return fs.statSync(candidate).isFile();
+  });
+  if (!file) {
+    res.writeHead(404);
+    res.end("not found");
     return;
   }
   fs.readFile(file, (err, data) => {

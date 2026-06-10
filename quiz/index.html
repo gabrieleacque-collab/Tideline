@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="../">
+  <title>潮汐线 TIDELINE · 情境问答</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/mobile-fixes.css">
+</head>
+<body data-page="quiz">
+  <canvas id="network" aria-hidden="true"></canvas>
+  <div class="result-flash" id="resultFlash" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="topbar" data-section="identity">
+      <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1>潮汐线 TIDELINE</h1><p class="subtitle">把日常收入、债务和机会放进一张坐标里。A self-check for income, debt and room to move.</p></div></div>
+      <nav class="page-nav" aria-label="主导航">
+        <a class="active" href="quiz.html">情境问答</a>
+        <a class="" href="test.html">手动模式</a>
+        <a class="" href="result.html">结果</a>
+        <a class="" href="routes.html">名人路径</a>
+        <a class="" href="model.html">方法论</a>
+      </nav>
+    </header>
+    <section class="quiz-stage panel" data-section="quiz">
+      <div class="quiz-meta"><span class="section-note">Scenario Diagnosis / 情境问答</span><strong id="quizProgress">1/10</strong></div>
+      <div class="quiz-bar"><span id="quizBar"></span></div>
+      <article class="quiz-card">
+        <h2 id="quizPerson">小林，21岁，大三计算机专业，成绩上游。课余接外包写小程序。</h2>
+        <p class="quiz-prompt">你的建议是：</p>
+        <div class="quiz-options" id="quizOptions"></div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="assets/ui.js"></script>
+</body>
+</html>
