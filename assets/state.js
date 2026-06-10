@@ -12,6 +12,11 @@ export function saveTestSnapshot(snapshot) {
   localStorage.setItem(STORAGE_KEY, payload);
 }
 
+export function clearTestSnapshot() {
+  sessionStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 export function loadTestSnapshot() {
   const raw = sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;

@@ -1,10 +1,10 @@
-import { inputs, simpleTheory, calculate, conclusion, dominant, dominantKey, round, analyzeTargetPath, targetNameFromPosition } from './calculate.js';
-import { createDefaultState, saveTestSnapshot, loadTestSnapshot } from './state.js';
-import { personalityMeta, renderRouteSparkline, getVisibleFamousRoutes } from './routes-data.js';
-import { scenarios } from './scenarios.js';
-import { applyScenarioOffsets, roleToKey, rolePositions, inferSelfPosition, inferStructuralPosition } from './diagnose.js';
-import { roleMeta } from './diagnoses.js';
-import { crossReadings } from './cross.js';
+import { inputs, simpleTheory, calculate, conclusion, dominant, dominantKey, round, analyzeTargetPath, targetNameFromPosition } from './calculate.js?v=20260610b';
+import { createDefaultState, saveTestSnapshot, loadTestSnapshot, clearTestSnapshot } from './state.js?v=20260610b';
+import { personalityMeta, renderRouteSparkline, getVisibleFamousRoutes } from './routes-data.js?v=20260610b';
+import { scenarios } from './scenarios.js?v=20260610b';
+import { applyScenarioOffsets, roleToKey, rolePositions, inferSelfPosition, inferStructuralPosition } from './diagnose.js?v=20260610b';
+import { roleMeta } from './diagnoses.js?v=20260610b';
+import { crossReadings } from './cross.js?v=20260610b';
 
 let state = createDefaultState();
 let targetPosition = null;
@@ -14,6 +14,7 @@ let selectedFamousIndex = 0;
 let quizIndex = 0;
 let quizAnswers = [];
 let currentPersonality = null;
+let manualTouched = false;
 
 const $ = id => document.getElementById(id);
 const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
@@ -48,6 +49,7 @@ function buildSliderForm(formId = 'form', onChange = updateTest) {
   inputs.forEach(item => {
     const el = $(`${formId}-${item.id}`);
     el?.addEventListener('input', () => {
+      manualTouched = true;
       state[item.id] = Number(el.value);
       setText(`value-${formId}-${item.id}`, formatInputValue(item, el.value));
       onChange();
@@ -63,10 +65,12 @@ function buildForm() {
 
 function initManualPage() {
   const snapshot = loadTestSnapshot();
-  if (snapshot) loadSnapshotIntoState(snapshot);
+  if (snapshot?.pendingNext === 'test' && snapshot?.quizCompleted) loadSnapshotIntoState(snapshot);
+  else quizAnswers = [];
   state = createManualInitialState();
   situationSignal = { x: 0, y: 0, note: '' };
   targetPosition = null;
+  manualTouched = false;
   buildForm();
   bindGenerate();
 }
@@ -85,6 +89,7 @@ function applySituationSignal(text = $('situationInput')?.value || '') {
   if (/资产|房租|股息|存款|投资|版权|店铺|股权|物业/.test(content)) signal.y -= 4;
   if (/技能|写作|设计|咨询|销售|工资|上班|手艺|专业/.test(content)) signal.y += 3;
   if (/风口|股票|币|杠杆|套利|流量|信息差|短视频|投机/.test(content)) { signal.x += 4; signal.y -= 2; }
+  manualTouched = true;
   situationSignal = signal;
   setText('situationHint', `${signal.note} 后台接入 AI 后会读取这里，定位会更细。`);
   updateTest();
@@ -137,7 +142,8 @@ function enableTargetDrag() {
     targetPosition = { x, y };
     updateTest();
     if (page === 'result') {
-      saveTestSnapshot({ state, answers: quizAnswers, situationSignal, targetPosition, coordinateRecords });
+      const snapshot = loadTestSnapshot() || {};
+      saveTestSnapshot({ ...snapshot, state, answers: quizAnswers, situationSignal, targetPosition, coordinateRecords });
       renderExpectedGreats(currentScores(), currentPersonality);
     }
   };
@@ -174,6 +180,10 @@ function bindTrajectory() {
 function bindGenerate() {
   $('generateTideCardButton')?.addEventListener('click', event => {
     event.preventDefault();
+    if (!manualTouched) {
+      setText('situationHint', '请至少调整一项参数，或填写个人情况后点击“更新定位”。');
+      return;
+    }
     const scores = currentScores();
     const quizCompleted = quizAnswers.filter(answer => answer?.scenarioId).length >= scenarios.length;
     const nextPageAfterManual = quizCompleted ? 'result.html' : 'quiz.html';
@@ -184,10 +194,26 @@ function bindGenerate() {
       coordinateRecords,
       answers: quizAnswers,
       quizCompleted,
-      manualCompleted: true
+      manualCompleted: true,
+      pendingNext: quizCompleted ? 'result' : 'quiz'
     });
     location.href = nextPageAfterManual;
   });
+}
+
+function initQuizPage() {
+  const snapshot = loadTestSnapshot();
+  const cameFromManual = Boolean(snapshot?.manualCompleted && snapshot?.pendingNext === 'quiz' && !snapshot?.quizCompleted);
+  if (cameFromManual) loadSnapshotIntoState(snapshot);
+  else {
+    state = createDefaultState();
+    targetPosition = null;
+    situationSignal = { x: 0, y: 0, note: '' };
+    coordinateRecords = [];
+  }
+  quizAnswers = [];
+  quizIndex = 0;
+  renderQuiz();
 }
 
 function renderQuiz() {
@@ -213,8 +239,8 @@ function chooseQuizOption(key) {
     return;
   }
   const existing = loadTestSnapshot();
-  const existingManualDone = Boolean(existing?.manualCompleted);
-  state = existingManualDone ? { ...createDefaultState(), ...(existing?.state || {}) } : applyScenarioOffsets(createDefaultState(), quizAnswers);
+  const canUseManualForCurrentQuiz = Boolean(existing?.manualCompleted && existing?.pendingNext === 'quiz' && !existing?.quizCompleted);
+  state = canUseManualForCurrentQuiz ? { ...createDefaultState(), ...(existing?.state || {}) } : applyScenarioOffsets(createDefaultState(), quizAnswers);
   const scores = calculate(state);
   const personality = personalityResultFromAnswers(quizAnswers, scores);
   saveTestSnapshot({
@@ -225,9 +251,10 @@ function chooseQuizOption(key) {
     targetPosition: existing?.targetPosition || personality.point,
     coordinateRecords: existing?.coordinateRecords || [],
     quizCompleted: true,
-    manualCompleted: existingManualDone
+    manualCompleted: canUseManualForCurrentQuiz,
+    pendingNext: canUseManualForCurrentQuiz ? 'result' : 'test'
   });
-  location.href = existingManualDone ? 'result.html' : 'test.html';
+  location.href = canUseManualForCurrentQuiz ? 'result.html' : 'test.html';
 }
 
 function loadSnapshotIntoState(snapshot) {
@@ -486,7 +513,12 @@ function startParticles() {
 
 const page = document.body.dataset.page;
 startParticles();
-if (page === 'quiz') renderQuiz();
+if (page === 'home') {
+  document.querySelectorAll('[data-start-mode]').forEach(link => {
+    link.addEventListener('click', () => clearTestSnapshot());
+  });
+}
+if (page === 'quiz') initQuizPage();
 if (page === 'test') initManualPage();
 if (page === 'result') renderResultPage();
 if (page === 'routes') renderFamousRoutes();

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>潮汐线 TIDELINE</title>
-  <link rel="stylesheet" href="assets/styles.css">
-  <link rel="stylesheet" href="assets/mobile-fixes.css">
+  <link rel="stylesheet" href="assets/styles.css?v=20260610b">
+  <link rel="stylesheet" href="assets/mobile-fixes.css?v=20260610b">
 </head>
 <body data-page="home">
   <canvas id="network" aria-hidden="true"></canvas>
@@ -21,11 +21,11 @@
         <div class="mode-choice" aria-label="选择测试方式">
           <span class="section-note">Choose Mode / 选择测试方式</span>
           <div class="mode-grid">
-            <a class="mode-card primary" href="quiz.html">
+            <a class="mode-card primary" href="quiz.html" data-start-mode="quiz">
               <strong>情境问答</strong>
               <span>先从十个处境里做选择，留下“你以为的自己”。</span>
             </a>
-            <a class="mode-card" href="test.html">
+            <a class="mode-card" href="test.html" data-start-mode="manual">
               <strong>手动模式</strong>
               <span>再调整收入、债务、存款与补助等参数，生成现实位置。</span>
             </a>
@@ -34,6 +34,6 @@
       </div>
     </section>
   </main>
-  <script type="module" src="assets/ui.js"></script>
+  <script type="module" src="assets/ui.js?v=20260610b"></script>
 </body>
 </html>
