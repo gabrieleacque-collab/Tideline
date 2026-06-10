@@ -10,21 +10,46 @@
 <body data-page="result">
   <canvas id="network" aria-hidden="true"></canvas>
   <div class="result-flash" id="resultFlash" aria-hidden="true"></div>
-  <main class="shell">
+  <main class="shell result-shell">
     <header class="topbar" data-section="identity">
-  <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1>潮汐线 TIDELINE</h1><p class="subtitle">把日常收入、债务和机会放进一张坐标里。A self-check for income, debt and room to move.</p></div></div>
-  <nav class="page-nav" aria-label="主导航">
-  <a class="" href="test.html">测试</a>
-  <a class="active" href="result.html">结果</a>
-  <a class="" href="routes.html">名人路径</a>
-  <a class="" href="model.html">方法论</a>
-</nav>
-</header>
-    <section class="empty-result panel" id="emptyResult"><h2>请先完成测试</h2><p>结果页需要读取你的参数和目标坐标。先完成测试，再生成自己的潮汐卡。</p><div class="hero-actions"><a class="hero-btn primary" href="test.html">返回测试页</a></div></section>
-    <section class="result-content" id="resultContent">
-      <section class="identity-deck" id="tidelineCard" data-section="identity-card"><section class="persona-card panel"><div class="persona-visual"><img id="personaImage" src="assets/persona-plant.png" alt="播种型人格插画"></div><div class="persona-copy"><span class="section-note">My Tide Card / 现状与未来</span><h2>我的潮汐卡</h2><div class="identity-row"><span>现状</span><strong id="cardCurrent">播种型</strong></div><div class="identity-row"><span>想去的方向</span><strong id="cardFuture">中线均衡区</strong></div><p id="cardRelation">你现在靠稳定底盘站住，未来要把一部分时间交给可以重复的机会。</p><div class="card-route"><span>这条路怎么走</span><ol id="cardSteps"></ol></div></div></section>
-      <section class="card-conclusion panel" id="cardConclusion"><div class="panel-head"><h2 class="panel-title">未来进展评估结论</h2><span class="panel-kicker">Forward View</span></div><div class="panel-body result-stack"><div class="verdict"><h3 id="verdictTitle">第三条路正在形成</h3><p id="verdictText">你已经有稳定底线，也开始从项目或机会中捕获上限。</p></div><div class="target-card" id="targetAnalysis"><span class="section-note">目标路径分析 / Route Analysis</span><h3 id="targetAnalysisTitle">你想去的结构：中线均衡区</h3><p id="targetAnalysisText">做到这个结果，你需要在保住稳定现金流的同时，把一个具体项目、客户或作品做成可重复收入。</p><ol id="targetSteps"></ol></div></div></section>
-      <section class="expected-greats panel" id="expectedGreats"><div class="expected-head"><div><span class="section-note">Expected Route / 走成这条路的人</span><h3>查看走成我期望轨迹的伟人</h3><p>平台会按你拖动的未来方向，挑出几张更接近的路径卡。</p></div><a class="open-famous" id="openFamousRoutes" href="routes.html">查看更多</a></div><div class="expected-cards" id="expectedGreatCards"></div></section>
+      <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><h1>潮汐线 TIDELINE</h1><p class="subtitle">把日常收入、债务和机会放进一张坐标里。A self-check for income, debt and room to move.</p></div></div>
+      <nav class="page-nav" aria-label="主导航">
+        <a class="" href="quiz.html">情境问答</a>
+        <a class="" href="test.html">手动模式</a>
+        <a class="active" href="result.html">结果</a>
+        <a class="" href="routes.html">名人路径</a>
+        <a class="" href="model.html">方法论</a>
+      </nav>
+    </header>
+    <section class="empty-result panel" id="emptyResult"><h2>请先完成测试</h2><p>结果页需要读取你的答题结果。先完成情境问答，再生成自己的潮汐人格。</p><div class="hero-actions"><a class="hero-btn primary" href="quiz.html">返回测试页</a></div></section>
+    <section class="result-content personality-result" id="resultContent">
+      <section class="personality-hero panel" data-section="personality-result">
+        <span class="section-note">My Tide Type / 我的潮汐人格</span>
+        <p class="personality-eyebrow">你的结果</p>
+        <h2 id="personalityResultName">农民</h2>
+        <p id="personalityResultLine">用时间换确定性</p>
+      </section>
+
+      <section class="deep-diagnosis" data-section="personality-depth">
+        <details class="panel" open><summary>人格说明</summary><div class="panel-body"><p id="personalityResultBody"></p></div></details>
+        <details class="panel" open><summary>双重定位 · 你以为的你 × 现实的拉力</summary><div class="panel-body">
+          <div class="cross-locked hidden" id="crossLocked"><p>双重定位需要读取你的答题选择。完成情境问答之后，这里会对照两个位置：<strong>你以为的自己</strong>（你在十个处境里做的选择），和<strong>现实的拉力</strong>（你的参数算出来的位置）。两者对不对得上，往往比结果本身更说明问题。</p><a class="hero-btn" href="quiz.html">去做情境问答</a></div>
+          <div id="crossContent">
+            <div class="cross-roles">
+              <div class="cross-chip" id="crossSelfChip"><small>你以为的你 · 来自你的选择</small><strong id="crossSelfName">—</strong><span id="crossSelfLine"></span></div>
+              <span class="cross-arrow" aria-hidden="true">×</span>
+              <div class="cross-chip" id="crossStructChip"><small>现实的拉力 · 来自你的参数</small><strong id="crossStructName">—</strong><span id="crossStructLine"></span></div>
+            </div>
+            <h3 class="cross-title" id="crossTitle"></h3>
+            <p class="cross-body" id="crossBody"></p>
+            <p class="cross-move" id="crossMove"></p>
+            <p class="cross-hint" id="crossHint">下方坐标图里：实心点是现实的你，空心环是你以为的你。两点之间的虚线，就是这段解读说的那条缝。</p>
+          </div>
+        </div></details>
+        <details class="panel" open><summary>四元坐标图</summary><div class="panel-body quad-wrap"><div class="quad diagnostic-quad" id="diagnosticQuad"><span class="axis top">占有 / 被动收益</span><span class="axis bottom">劳动 / 主动收益</span><span class="axis left">陆地经济 / 确定性</span><span class="axis right">海洋经济 / 不确定性</span><div class="node landlord"><strong>地主</strong><span>地契</span></div><div class="node pirate"><strong>海盗</strong><span>截流</span></div><div class="node farmer"><strong>农民</strong><span>生产</span></div><div class="node fisher"><strong>渔民</strong><span>应变</span></div><div class="position-dot" id="dot"></div><div class="position-label" id="dotLabel">你的结果</div><div class="self-position-dot" id="selfMarker" style="display:none"><em>你以为</em></div><svg class="trajectory-overlay" id="trajectoryOverlay" viewBox="0 0 100 100" aria-hidden="true"><line id="crossLine" x1="0" y1="0" x2="0" y2="0" style="display:none"></line><polyline id="trajectoryPolyline" points=""></polyline><g id="trajectoryPoints"></g></svg><div class="target-path" id="targetPath" aria-hidden="true"></div><button class="target-dot" id="targetDot" type="button" aria-label="拖动光点，选择想去的位置"></button></div><div class="target-card"><span class="section-note">Target Drag / Future Position</span><h3>拖动光点，选择想去的位置</h3><p>当前点是你的结果；你拖动的是“想去的结构”。平台会按这条轨迹分析：你要增加什么、减少什么，才更接近拖动后的结果。</p></div><div class="target-card trajectory-card"><span class="section-note">Route Memory / 最近记录</span><h3>测算轨迹</h3><p>每做一次记录，就把当前坐标点留在图上。</p><div class="trajectory-actions"><button id="recordCurrentPosition" type="button">记录本次坐标</button><button id="clearTrajectory" type="button">清空轨迹</button></div><ol class="record-list" id="recordList"></ol></div><div class="score-grid"><div class="score" style="--tone: var(--gold)"><span>地主分</span><strong id="scoreLandlord">24</strong></div><div class="score" style="--tone: var(--red)"><span>海盗分</span><strong id="scorePirate">18</strong></div><div class="score" style="--tone: var(--green)"><span>农民分</span><strong id="scoreFarmer">70</strong></div><div class="score" style="--tone: var(--blue)"><span>渔民分</span><strong id="scoreFisher">46</strong></div></div></div></details>
+        <details class="panel"><summary>参数明细 + 雷达图</summary><div class="panel-body"><div class="param-groups" id="paramGroups"></div></div></details>
+        <details class="panel"><summary>滑块微调</summary><div class="panel-body"><p class="detail-copy">如果你的处境变了，结果也会移动。这里可以手动微调参数，实时重算人格倾向。</p><div class="test-form" id="resultTuningForm"></div></div></details>
+        <details class="panel"><summary>走成我期望轨迹的伟人</summary><div class="panel-body"><div class="expected-head"><div><span class="section-note">Expected Route / 参考路径</span><h3>查看接近这一类的人物路径</h3><p>平台会按你的潮汐人格，挑出几张更接近的路径卡。</p></div><a class="open-famous" id="openFamousRoutes" href="routes.html">查看更多</a></div><div class="expected-cards" id="expectedGreatCards"></div></div></details>
       </section>
     </section>
   </main>

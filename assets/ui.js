@@ -1,34 +1,45 @@
 import { inputs, simpleTheory, calculate, conclusion, dominant, dominantKey, round, analyzeTargetPath, targetNameFromPosition } from './calculate.js';
 import { createDefaultState, saveTestSnapshot, loadTestSnapshot } from './state.js';
-import { personalityMeta, renderRouteSparkline, getVisibleFamousRoutes, targetKeyFromPosition } from './routes-data.js';
+import { personalityMeta, renderRouteSparkline, getVisibleFamousRoutes } from './routes-data.js';
+import { scenarios } from './scenarios.js';
+import { applyScenarioOffsets, roleToKey, rolePositions, inferSelfPosition, inferStructuralPosition } from './diagnose.js';
+import { roleMeta } from './diagnoses.js';
+import { crossReadings } from './cross.js';
 
 let state = createDefaultState();
 let targetPosition = null;
 let situationSignal = { x: 0, y: 0, note: '' };
 let coordinateRecords = [];
 let selectedFamousIndex = 0;
+let quizIndex = 0;
+let quizAnswers = [];
+let currentPersonality = null;
 
 const $ = id => document.getElementById(id);
 const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
 const setHTML = (id, html) => { const el = $(id); if (el) el.innerHTML = html; };
 
-function buildForm() {
-  const form = $('form');
+function buildSliderForm(formId = 'form', onChange = updateTest) {
+  const form = $(formId);
   if (!form) return;
   form.innerHTML = inputs.map(item => {
     const min = item.min ?? 0;
     const max = item.max ?? 100;
     const unit = item.unit ?? '%';
-    return `<label class="slider-row" title="${item.hint}"><span class="slider-label"><strong>${item.label}</strong><span class="value" id="value-${item.id}">${state[item.id] ?? item.value}${unit}</span></span><input type="range" min="${min}" max="${max}" value="${state[item.id] ?? item.value}" id="${item.id}"></label>`;
+    return `<label class="slider-row" title="${item.hint}"><span class="slider-label"><strong>${item.label}</strong><span class="value" id="value-${formId}-${item.id}">${state[item.id] ?? item.value}${unit}</span></span><input type="range" min="${min}" max="${max}" value="${state[item.id] ?? item.value}" id="${formId}-${item.id}" data-input-id="${item.id}"></label>`;
   }).join('');
   inputs.forEach(item => {
-    const el = $(item.id);
+    const el = $(`${formId}-${item.id}`);
     el?.addEventListener('input', () => {
       state[item.id] = Number(el.value);
-      setText(`value-${item.id}`, `${el.value}${item.unit ?? '%'}`);
-      updateTest();
+      setText(`value-${formId}-${item.id}`, `${el.value}${item.unit ?? '%'}`);
+      onChange();
     });
   });
+}
+
+function buildForm() {
+  buildSliderForm('form', updateTest);
   $('situationApply')?.addEventListener('click', () => applySituationSignal());
   $('situationInput')?.addEventListener('input', () => setText('situationHint', '写完后点“更新定位”。后台接入 AI 后会读取这里；现在先用关键词轻轻修正定位点。'));
 }
@@ -89,7 +100,7 @@ function updateTest() {
 }
 
 function enableTargetDrag() {
-  const quad = $('quad');
+  const quad = $('quad') || $('diagnosticQuad');
   const dot = $('targetDot');
   if (!quad || !dot) return;
   const moveTarget = event => {
@@ -98,6 +109,10 @@ function enableTargetDrag() {
     const y = Math.max(13, Math.min(87, ((event.clientY - rect.top) / rect.height) * 100));
     targetPosition = { x, y };
     updateTest();
+    if (page === 'result') {
+      saveTestSnapshot({ state, answers: quizAnswers, situationSignal, targetPosition, coordinateRecords });
+      renderExpectedGreats(currentScores(), currentPersonality);
+    }
   };
   dot.addEventListener('pointerdown', event => { event.preventDefault(); dot.classList.add('dragging'); dot.setPointerCapture(event.pointerId); moveTarget(event); });
   dot.addEventListener('pointermove', event => { if (dot.classList.contains('dragging')) moveTarget(event); });
@@ -132,8 +147,45 @@ function bindTrajectory() {
 function bindGenerate() {
   $('generateTideCardButton')?.addEventListener('click', () => {
     const scores = currentScores();
-    saveTestSnapshot({ state, situationSignal, targetPosition: targetPosition || { x: scores.x, y: scores.y }, coordinateRecords });
+    const pseudoAnswer = { scenarioId: 0, option: { structuralLabel: dominantKey(scores) === 'plant' ? 'farmer' : dominantKey(scores) === 'surf' ? 'fisher' : dominantKey(scores) === 'build' ? 'landlord' : 'pirate', paramOffsets: {} } };
+    saveTestSnapshot({ state, situationSignal, targetPosition: targetPosition || { x: scores.x, y: scores.y }, coordinateRecords, answers: [pseudoAnswer] });
   });
+}
+
+function renderQuiz() {
+  const scenario = scenarios[quizIndex];
+  if (!scenario) return;
+  setText('quizProgress', `${quizIndex + 1}/10`);
+  const bar = $('quizBar');
+  if (bar) bar.style.width = `${((quizIndex + 1) / scenarios.length) * 100}%`;
+  setText('quizPerson', scenario.person);
+  setHTML('quizOptions', scenario.options.map(option => `<button class="quiz-option" type="button" data-option="${option.key}"><span>${option.key}</span><p>${option.text}</p></button>`).join(''));
+  document.querySelectorAll('[data-option]').forEach(button => {
+    button.addEventListener('click', () => chooseQuizOption(button.dataset.option));
+  });
+}
+
+function chooseQuizOption(key) {
+  const scenario = scenarios[quizIndex];
+  const option = scenario.options.find(item => item.key === key);
+  quizAnswers.push({ scenarioId: scenario.id, option });
+  if (quizIndex < scenarios.length - 1) {
+    quizIndex += 1;
+    renderQuiz();
+    return;
+  }
+  state = applyScenarioOffsets(createDefaultState(), quizAnswers);
+  const scores = calculate(state);
+  const personality = personalityResultFromAnswers(quizAnswers, scores);
+  saveTestSnapshot({
+    state,
+    answers: quizAnswers,
+    personalityCode: personality.role,
+    situationSignal,
+    targetPosition: personality.point,
+    coordinateRecords: []
+  });
+  location.href = 'result.html';
 }
 
 function loadSnapshotIntoState(snapshot) {
@@ -141,42 +193,132 @@ function loadSnapshotIntoState(snapshot) {
   situationSignal = snapshot?.situationSignal || { x: 0, y: 0, note: '' };
   targetPosition = snapshot?.targetPosition || null;
   coordinateRecords = snapshot?.coordinateRecords || [];
+  quizAnswers = snapshot?.answers || [];
 }
 
-function renderTideCard(scores) {
-  const key = dominantKey(scores);
-  const meta = personalityMeta[key];
-  const target = targetPosition || { x: scores.x, y: scores.y };
-  const future = targetNameFromPosition(target.x, target.y);
-  const analysis = analyzeTargetPath(scores, target);
-  const card = $('tidelineCard');
-  card?.style.setProperty('--persona-tone', meta.tone);
-  card?.style.setProperty('--persona-rgb', meta.rgb);
-  const img = $('personaImage');
-  if (img) { img.src = meta.image; img.alt = `${meta.name}人格插画`; }
-  setText('cardCurrent', `${meta.name} / ${meta.en}`);
-  setText('cardFuture', future);
-  setText('cardRelation', `你现在更接近${meta.name}：${meta.line}。你拖动的方向是${future}，这不是换一种身份，而是在原来的底盘上调结构。${analysis.text.replace('做到这个结果，你需要：', '')}`);
-  setHTML('cardSteps', analysis.steps.map(step => `<li>${step}</li>`).join(''));
+function personalityResultFromAnswers(answers = [], scores = currentScores()) {
+  const counts = { farmer: 0, fisher: 0, landlord: 0, pirate: 0 };
+  const weights = { farmer: 0, fisher: 0, landlord: 0, pirate: 0 };
+  for (const answer of answers) {
+    const role = answer?.option?.structuralLabel || answer?.structuralLabel;
+    if (!counts.hasOwnProperty(role)) continue;
+    counts[role] += 1;
+    weights[role] += Object.values(answer?.option?.paramOffsets || {}).reduce((sum, value) => sum + Math.abs(value), 0);
+  }
+  const role = Object.keys(counts).sort((a, b) => {
+    const countDiff = counts[b] - counts[a];
+    if (countDiff) return countDiff;
+    const weightDiff = weights[b] - weights[a];
+    if (weightDiff) return weightDiff;
+    const scoreMap = { farmer: scores.farmer, fisher: scores.fisher, landlord: scores.landlord, pirate: scores.pirate };
+    return scoreMap[b] - scoreMap[a];
+  })[0] || 'farmer';
+  return { role, meta: roleMeta[role] || roleMeta.farmer, point: rolePositions[role] || rolePositions.farmer };
 }
 
-function renderConclusion(scores) {
-  const result = conclusion(scores);
-  const analysis = analyzeTargetPath(scores, targetPosition);
-  setText('verdictTitle', result.title);
-  setText('verdictText', result.text);
-  setText('targetAnalysisTitle', analysis.title);
-  setText('targetAnalysisText', analysis.text);
-  setHTML('targetSteps', analysis.steps.map(step => `<li>${step}</li>`).join(''));
+function renderDiagnosticQuad(personality, scores = currentScores()) {
+  const point = personality?.point || { x: scores.x, y: scores.y };
+  if (!targetPosition) targetPosition = { x: point.x, y: point.y };
+  const dot = $('dot') || $('structuralPositionDot');
+  const label = $('dotLabel');
+  if (dot) {
+    dot.style.setProperty('--x', scores.x);
+    dot.style.setProperty('--y', scores.y);
+  }
+  if (label) {
+    label.style.setProperty('--x', scores.x);
+    label.style.setProperty('--y', scores.y);
+    label.textContent = personality?.meta?.name || conclusion(scores).path;
+  }
+  updateTargetOverlay(scores);
 }
 
-function renderExpectedGreats(scores = currentScores()) {
-  const mount = $('expectedGreatCards');
-  if (!mount) return;
-  const target = targetPosition || { x: scores.x, y: scores.y };
-  const key = targetKeyFromPosition(target);
-  const matched = getVisibleFamousRoutes().filter(person => person.key === key || person.path.includes(key)).slice(0, 3);
-  mount.innerHTML = matched.map(person => `<article class="expected-card"><h4>${person.name}</h4><span>${person.route}</span><p>${person.text}</p></article>`).join('');
+function renderParamGroups() {
+  const groups = [
+    ['农民', ['stableIncome', 'attention', 'familyLoad'], 'var(--green)'],
+    ['渔民', ['projectIncome', 'skill', 'debt'], 'var(--blue)'],
+    ['地主', ['assetIncome', 'institution', 'savings'], 'var(--gold)'],
+    ['海盗', ['specIncome'], 'var(--red)']
+  ];
+  const labels = Object.fromEntries(inputs.map(item => [item.id, item]));
+  setHTML('paramGroups', groups.map(group => `<section class="param-group" style="--group-tone:${group[2]}"><h4>${group[0]}</h4>${group[1].map(key => `<div class="param-row"><span>${labels[key]?.label || key}</span><strong>${state[key] ?? 0}${labels[key]?.unit ?? '%'}</strong></div>`).join('')}</section>`).join(''));
+}
+
+function personalityBody(role) {
+  const bodies = {
+    farmer: '你更接近农民：相信稳定、长期投入和持续劳动。你的优势是能把一件事做深，风险是太容易只在生产端用力，而忽略流通、定价和资产沉淀。',
+    fisher: '你更接近渔民：靠判断、手艺和时机在变化里获得收入。你的优势是灵活，风险是太依赖外部水域，需要慢慢沉淀自己的客户、作品和规则。',
+    landlord: '你更接近地主：重视稳定资源、平台位置和可持续收益。你的优势是能把价值留下来，风险是过度相信既有地盘，忘了重新劳动和更新能力。',
+    pirate: '你更接近海盗：对速度、信息差和窗口期很敏感。你的优势是能快速抓住机会，风险是如果只靠截流和波动，最后会缺少真正能生根的东西。'
+  };
+  return bodies[role] || bodies.farmer;
+}
+
+function renderResultPersonality() {
+  const scores = calculate(state, situationSignal);
+  currentPersonality = personalityResultFromAnswers(quizAnswers, scores);
+  const meta = currentPersonality.meta;
+  const hero = document.querySelector('.personality-hero');
+  hero?.style.setProperty('--persona-tone', meta.tone);
+  setText('personalityResultName', meta.name);
+  setText('personalityResultLine', meta.line);
+  setText('personalityResultBody', personalityBody(currentPersonality.role));
+  renderDiagnosticQuad(currentPersonality, scores);
+  updateTest();
+  renderParamGroups();
+  renderTrajectory();
+  renderCrossReading(scores);
+  renderExpectedGreats(scores, currentPersonality);
+}
+
+function renderCrossReading(scores = currentScores()) {
+  const content = $('crossContent');
+  const locked = $('crossLocked');
+  const marker = $('selfMarker');
+  const line = $('crossLine');
+  if (!content && !locked) return;
+  const realAnswers = quizAnswers.filter(answer => answer?.scenarioId);
+  const hasQuiz = realAnswers.length >= 2;
+  if (!hasQuiz) {
+    locked?.classList.remove('hidden');
+    content?.classList.add('hidden');
+    if (marker) marker.style.display = 'none';
+    if (line) line.style.display = 'none';
+    return;
+  }
+  locked?.classList.add('hidden');
+  content?.classList.remove('hidden');
+  const selfRole = inferSelfPosition(realAnswers);
+  const structRole = inferStructuralPosition(state);
+  const selfMeta = roleMeta[selfRole] || roleMeta.farmer;
+  const structMeta = roleMeta[structRole] || roleMeta.farmer;
+  const reading = crossReadings[selfRole]?.[structRole] || crossReadings.farmer.farmer;
+  $('crossSelfChip')?.style.setProperty('--chip-tone', selfMeta.tone);
+  $('crossStructChip')?.style.setProperty('--chip-tone', structMeta.tone);
+  setText('crossSelfName', selfMeta.name);
+  setText('crossSelfLine', selfMeta.line);
+  setText('crossStructName', structMeta.name);
+  setText('crossStructLine', structMeta.line);
+  setText('crossTitle', reading.title);
+  setText('crossBody', reading.body);
+  setText('crossMove', reading.move);
+  const aligned = selfRole === structRole;
+  setText('crossHint', aligned
+    ? '下方坐标图里：实心点是现实的你，空心环是你以为的你。两个点几乎重合——你选择的活法和你真实的处境是同一个。'
+    : '下方坐标图里：实心点是现实的你，空心环是你以为的你。两点之间的虚线，就是这段解读说的那条缝。');
+  const selfPoint = rolePositions[selfRole] || rolePositions.farmer;
+  if (marker) {
+    marker.style.display = '';
+    marker.style.setProperty('--x', selfPoint.x);
+    marker.style.setProperty('--y', selfPoint.y);
+  }
+  if (line) {
+    line.style.display = '';
+    line.setAttribute('x1', selfPoint.x);
+    line.setAttribute('y1', selfPoint.y);
+    line.setAttribute('x2', scores.x.toFixed(1));
+    line.setAttribute('y2', scores.y.toFixed(1));
+  }
 }
 
 function renderResultPage() {
@@ -187,10 +329,22 @@ function renderResultPage() {
     return;
   }
   loadSnapshotIntoState(snapshot);
-  const scores = currentScores();
-  renderTideCard(scores);
-  renderConclusion(scores);
-  renderExpectedGreats(scores);
+  renderResultPersonality();
+  buildSliderForm('resultTuningForm', () => {
+    saveTestSnapshot({ state, answers: quizAnswers, situationSignal, targetPosition, coordinateRecords });
+    renderResultPersonality();
+  });
+  enableTargetDrag();
+  bindTrajectory();
+}
+
+function renderExpectedGreats(scores = currentScores(), personality = currentPersonality) {
+  const mount = $('expectedGreatCards');
+  if (!mount) return;
+  const targetRole = personality?.role || 'farmer';
+  const key = roleToKey[targetRole] || 'plant';
+  const matched = getVisibleFamousRoutes().filter(person => person.key === key || person.path.includes(key)).slice(0, 3);
+  mount.innerHTML = matched.map(person => `<article class="expected-card"><h4>${person.name}</h4><span>${person.route}</span><p>${person.text}</p></article>`).join('');
 }
 
 function selectFamousRoute(index, scores = currentScores()) {
@@ -231,7 +385,7 @@ function renderSimpleTheory() {
 
 function triggerResultFlash(scores = currentScores()) {
   const flash = $('resultFlash');
-  const dot = $('dot');
+  const dot = $('dot') || $('structuralPositionDot');
   if (!flash || !dot) return;
   const rect = dot.getBoundingClientRect();
   const fx = ((rect.left + rect.width / 2) / innerWidth) * 100;
@@ -286,7 +440,8 @@ function startParticles() {
 
 const page = document.body.dataset.page;
 startParticles();
-if (page === 'test') { buildForm(); enableTargetDrag(); bindTrajectory(); bindGenerate(); updateTest(); }
+if (page === 'quiz') renderQuiz();
+if (page === 'test') { buildForm(); bindGenerate(); }
 if (page === 'result') renderResultPage();
 if (page === 'routes') renderFamousRoutes();
 if (page === 'model') renderSimpleTheory();
